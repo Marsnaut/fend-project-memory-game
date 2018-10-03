@@ -1,118 +1,188 @@
-// Shuffle function from http://stackoverflow.com/a/2450976
-function shuffle(array) {
-	var currentIndex = array.length, temporaryValue, randomIndex;
 
-	while (currentIndex !== 0) {
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex -= 1;
-		temporaryValue = array[currentIndex];
-		array[currentIndex] = array[randomIndex];
-		array[randomIndex] = temporaryValue;
-	}
+ let cardList = ['fa-diamond', 'fa-diamond',
+ 								'fa-paper-plane-o', 'fa-paper-plane-o',
+ 								'fa-anchor', 'fa-anchor',
+ 								'fa-bolt', 'fa-bolt',
+ 								'fa-cube', 'fa-cube',
+ 								'fa-leaf', 'fa-leaf',
+ 								'fa-bicycle', 'fa-bicycle',
+ 								'fa-bomb', 'fa-bomb'
+ 							];
 
-	return array;
-}
-
-const deck = document.querySelector('.deck')
-const cards = [...document.querySelectorAll('.card')];
-const moveCount = document.querySelector('.moves');
+const scorePanel = document.querySelector(".score-panel");
+const stars = document.querySelector(".stars");
+const moves = document.querySelector(".moves");
+const restart = document.querySelector(".restart");
+const deck = document.querySelector(".deck");
 
 
-let cardList = ['fa-diamond', 'fa-diamond',
-								'fa-paper-plane-o', 'fa-paper-plane-o',
-								'fa-anchor', 'fa-anchor',
-								'fa-bolt', 'fa-bolt',
-								'fa-cube', 'fa-cube',
-								'fa-leaf', 'fa-leaf',
-								'fa-bicycle', 'fa-bicycle',
-								'fa-bomb', 'fa-bomb'
-							];
-
-const generateCard = (card) => {;
-	return `<li class="card"><i class="fa ${card}"></i>`;
-}
-
-const initGame = () => {
-	let cardHTML = shuffle(cardList).map((card) => {
-		return generateCard(card);
-	}).join('');
-	deck.innerHTML = cardHTML;
-}
-
-initGame();
-
-
+const winners = document.querySelector('.winners');
+// const winnerModal = document.querySelector('#winner-modal');
+const winnerMessage = document.querySelector('#winner-message');
+const playAgain = document.querySelector('.playAgain');
 
 let activeCards = [];
-let count = 0;
+let matchedCards = 0;
+let star = 3;
+let moveCounter = moves.textContent || 0;
+let interval;
+let second = 0;
+let minute = 0;
+let timer = document.querySelector('.timer');
+let timeStart = false;
 
-const toggleCard = (card) => {
-	card.classList.toggle('open');
-	card.classList.toggle('show');
-}
-
-const addActiveCard = (card) => {
-	activeCards.push(card);
-}
-
-const checkMatch = () => {
-	if (activeCards[0].firstElementChild.className === activeCards[1].firstElementChild.className) {
-		activeCards[0].classList.toggle('match');
-		activeCards[1].classList.toggle('match');
-		activeCards = [];
-	} else {
-		const unFlip = setTimeout(() => {
-			toggleCard(activeCards[0]);
-			toggleCard(activeCards[1]);
-			activeCards = [];
-		}, 1000);
+function init(){
+  stopTimer();
+  timeStart = false;
+  timer.textContent = minute+"minutes "+second+"seconds";
+	let shuffledCards = shuffle(cardList);  
+	
+  for (let i=0; i<cardList.length; i++){  
 		
-		// if (activeCards.length >= 3) {
-		// 	clearTimeout(unFlip);
-		// };
+    let deckIndex = deck.getElementsByTagName("li"); 
+    let listElementsClass = deckIndex[i].getAttribute("class");
+    deckIndex[i].className='';
+    deckIndex[i].classList.add('card');
 
-	}
-	console.log(count);
+    let deckIconElements = deck.getElementsByTagName("i"); /*shuffle the icons*/
+    let iconElementsClass = deckIconElements[i].getAttribute("class");
+    deckIconElements[i].className='';
+    deckIconElements[i].classList.add('fa',shuffledCards[i]);
+    }
+  
+  activeCards = [];
+  matchedCards = 0;
+  moves.textContent = 0;
+  moveCounter = moves.textContent || 0;
+  stars.innerHTML='<li><i class="fa fa-star"></i></li> <li><i class="fa fa-star"></i></li> <li><i class="fa fa-star"></i></li>';
+  star='3';
+  };
+
+
+// Shuffle function from http://stackoverflow.com/a/2450976
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+    return array;
 }
 
-const updateMoves = () => {
-	count++;
-
-	moveCount.innerHTML = count;
-}
+// Start Game
+init();
 
 deck.addEventListener('click', (e) => {
-	const card = e.target;
+	if (!timeStart) {
+    startTimer();
+    timeStart= true;
+	};
 	
-	if (activeCards.length < 2) {
-		toggleCard(card);
-		addActiveCard(card);
-	}
-
-	if (activeCards.length === 2) {
-		checkMatch();
-		updateMoves();
-	}
+	let card = e.target;
 	
-})
-
-
-
-// const restart = document.querySelectorAll('#restart');
-// restart.addEventListener('click', () => {
+  if (activeCards.length < 2){
+    if (!card.classList.contains('open')){ 
+      showSymbol(card); 
+      addCardOpen(card); 
+		}};
+		
+  if (activeCards.length === 2){
+    if (activeCards[0].innerHTML === activeCards[1].innerHTML){
+      goodMatch();
+      matchedCards++;
+     }
+    else {
+      badMatch()
+		};
 	
-// 	initGame();
-// })
+	// Moves
+	moveCounter++;
+	
+	// Stars
+  moves.innerText = moveCounter 
+  if ( moves.innerText >= 20 ) {
+      stars.innerHTML='<li><i class="fa fa-star"></i></li>';
+      star='1';
+    }
+    else if ( moves.innerText >= 10 ){
+      stars.innerHTML='<li><i class="fa fa-star"></i></li> <li><i class="fa fa-star"></i></li>';
+      star='2';
+    }
+    else {
+      stars.innerHTML='<li><i class="fa fa-star"></i></li> <li><i class="fa fa-star"></i></li> <li><i class="fa fa-star"></i></li>';
+      star='3';
+    }
+  }; 
+  gameOver() 
+});
+
+// Card Logic
+function addCardOpen(card){
+  activeCards.push(card);
+};
+
+function showSymbol(card){
+  card.classList.add('open');
+  card.classList.add('show');
+ };
+
+function goodMatch(){
+  activeCards[0].classList.add('match');
+  activeCards[0].classList.remove('open','show');
+  activeCards[1].classList.add('match');
+  activeCards[1].classList.remove('open','show');
+  activeCards=[];
+};
+
+function badMatch(){
+  setTimeout(function(){
+    activeCards[0].classList.remove("show", "open");
+    activeCards[1].classList.remove("show", "open");
+    activeCards = [];
+  }, 1000);
+};
+
+// Restart
+restart.addEventListener('click', init);
+
+// End Game with complete matches
+function gameOver(){
+  if (matchedCards === 8){
+		// winnerModal.style.display='block';
+		winners.style.display = 'block';
+    winnerMessage.textContent= `Congrats. It took ${minute} minutes and ${second} seconds, and ${moveCounter} moves. You earn ${star} stars`; 
+		stopTimer();
+  }
+};
 
 
-// const isGameWon = () => {
-	// 	const win = cards.every((card) => {
-	// 		card.classList.contains('match');
-	// 	})
-	
-	// 	if (win) {
-	//		alert('Your score is')
-	// 	}
-	
-	// }
-	
+// Timer
+function startTimer(){
+   interval = setInterval(function(){
+        timer.textContent = minute+"minutes "+second+"seconds";
+        second++;
+        if (second === 60){
+          minute++;
+          second=0;
+        }
+    }, 1000);
+};
+
+
+function stopTimer(){
+  clearInterval(interval);
+  second = 0;
+  minute = 0;
+}
+
+// Restart Game
+restart.addEventListener('click', init());
+
+playAgain.addEventListener('click',function(){
+  winners.style.display = "none";
+  init();
+});

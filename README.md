@@ -1,20 +1,9 @@
-# Memory Game Project
+# Project Overview
 
-## Table of Contents
+This project is an implementation of a Memory Game. It uses JavaScript, jQuery and HTML/CSS styling. It is an interactive game where you complete 8 pairs of matches to win the game.
 
-* [Instructions](#instructions)
-* [Contributing](#contributing)
+## Steps to successfully run this application
 
-## Instructions
+Nothing special is needed to run this application. However, I suggest doing `npm install jquery` if you do not have it installed globally. There is no `package.json` attached.
 
-The starter project has some HTML and CSS styling to display a static version of the Memory Game project. You'll need to convert this project from a static project to an interactive one. This will require modifying the HTML and CSS files, but primarily the JavaScript file.
-
-To get started, open `js/app.js` and start building out the app's functionality
-
-For specific, detailed instructions, look at the project instructions in the [Udacity Classroom](https://classroom.udacity.com/me).
-
-## Contributing
-
-This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.
-
-For details, check out [CONTRIBUTING.md](CONTRIBUTING.md).
+Open the `index.html` file in any browser to load the file.
