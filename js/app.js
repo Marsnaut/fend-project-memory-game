@@ -15,9 +15,7 @@ const moves = document.querySelector(".moves");
 const restart = document.querySelector(".restart");
 const deck = document.querySelector(".deck");
 
-
-const winners = document.querySelector('.winners');
-// const winnerModal = document.querySelector('#winner-modal');
+const winnerModal = document.querySelector('#winner-modal');
 const winnerMessage = document.querySelector('#winner-message');
 const playAgain = document.querySelector('.playAgain');
 
@@ -44,7 +42,7 @@ function init(){
     deckIndex[i].className='';
     deckIndex[i].classList.add('card');
 
-    let deckIconElements = deck.getElementsByTagName("i"); /*shuffle the icons*/
+    let deckIconElements = deck.getElementsByTagName("i");
     let iconElementsClass = deckIconElements[i].getAttribute("class");
     deckIconElements[i].className='';
     deckIconElements[i].classList.add('fa',shuffledCards[i]);
@@ -86,9 +84,13 @@ deck.addEventListener('click', (e) => {
 	
   if (activeCards.length < 2){
     if (!card.classList.contains('open')){ 
-      showSymbol(card); 
-      addCardOpen(card); 
-		}};
+      if (card !== activeCards[0]) {
+        showSymbol(card); 
+        addCardOpen(card); 
+
+      }
+    }};
+    
 		
   if (activeCards.length === 2){
     if (activeCards[0].innerHTML === activeCards[1].innerHTML){
@@ -98,9 +100,6 @@ deck.addEventListener('click', (e) => {
     else {
       badMatch()
 		};
-	
-	// Moves
-	moveCounter++;
 	
 	// Stars
   moves.innerText = moveCounter 
@@ -136,6 +135,8 @@ function goodMatch(){
   activeCards[1].classList.add('match');
   activeCards[1].classList.remove('open','show');
   activeCards=[];
+  moveCounter++;
+  moves.innerText = moveCounter 
 };
 
 function badMatch(){
@@ -143,7 +144,9 @@ function badMatch(){
     activeCards[0].classList.remove("show", "open");
     activeCards[1].classList.remove("show", "open");
     activeCards = [];
-  }, 1000);
+    ++moveCounter;
+    moves.innerText = moveCounter 
+  }, 500);
 };
 
 // Restart
@@ -151,10 +154,10 @@ restart.addEventListener('click', init);
 
 // End Game with complete matches
 function gameOver(){
-  if (matchedCards === 8){
-		// winnerModal.style.display='block';
-		winners.style.display = 'block';
-    winnerMessage.textContent= `Congrats. It took ${minute} minutes and ${second} seconds, and ${moveCounter} moves. You earn ${star} stars`; 
+  const allCards = document.querySelectorAll('.match');
+  if (allCards.length === 16) {
+    winnerModal.style.display='block';
+    winnerMessage.textContent= `Congrats. It took ${minute} minutes and ${second - 1} seconds, and ${moveCounter} moves. You earn ${star} star(s)`; 
 		stopTimer();
   }
 };
@@ -172,7 +175,6 @@ function startTimer(){
     }, 1000);
 };
 
-
 function stopTimer(){
   clearInterval(interval);
   second = 0;
@@ -183,6 +185,6 @@ function stopTimer(){
 restart.addEventListener('click', init());
 
 playAgain.addEventListener('click',function(){
-  winners.style.display = "none";
+  winnerModal.style.display = "none";
   init();
 });
